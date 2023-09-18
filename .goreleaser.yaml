@@ -1,0 +1,3 @@
+builds:
+  - ldflags:
+   - -s -w -X "main.version=v1.0.0"

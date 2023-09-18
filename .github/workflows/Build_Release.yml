@@ -22,6 +22,6 @@ jobs:
     - name: Create release on GitHub
       uses: docker://goreleaser/goreleaser:latest
       with:
-        args: release --skip-validate -ldflags "-s -w -X main.version=v1.0.0"
+        args: release --skip-validate
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

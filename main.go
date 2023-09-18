@@ -177,7 +177,7 @@ func getHTTPServerName(buf []byte) string {
 		serviceLogger("未匹配到Host", 31, true)
 		return ""
 	}
-	return match[2]
+	return match[1]
 }
 
 // 获取 SNI 域名

@@ -82,13 +82,13 @@ func main() {
 		os.Exit(1)
 	}
 	if len(cfg.ProxyType) <= 0 {
-		cfg.ProxyType := "HTTPS"
+		cfg.ProxyType = "HTTPS"
 	}
 	if cfg.ProxyType != "HTTPS" {
-		cfg.ProxyType := "HTTP"
+		cfg.ProxyType = "HTTP"
 	}
 	if cfg.ProxyType == "HTTP" {
-		ForwardPort := 80
+		ForwardPort = 80
 	}
 	for _, rule := range cfg.ForwardRules { // 输出规则中的所有域名
 		serviceLogger(fmt.Sprintf("加载规则: %v", rule), 32, false)
@@ -143,10 +143,11 @@ func serve(c net.Conn, raddr string) {
 		return
 	}
 
+	ServerName := ""
 	if cfg.ProxyType == "HTTP" {
-		ServerName := getHTTPServerName(buf[:n])
+		ServerName = getHTTPServerName(buf[:n])
 	} else {
-		ServerName := getSNIServerName(buf[:n]) // 获取 SNI 域名
+		ServerName = getSNIServerName(buf[:n]) // 获取 SNI 域名
 	}
 
 	if ServerName == "" {

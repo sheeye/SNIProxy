@@ -32,6 +32,7 @@ type configModel struct {
 	ForwardRules  []string `yaml:"rules,omitempty"`
 	ListenAddr    string   `yaml:"listen_addr,omitempty"`
 	ProxyType     string   `yaml:"proxy_type,omitempty"`
+	ForwardPort   int      `yaml:"forward_port,omitempty"`
 	EnableSocks   bool     `yaml:"enable_socks5,omitempty"`
 	SocksAddr     string   `yaml:"socks_addr,omitempty"`
 	AllowAllHosts bool     `yaml:"allow_all_hosts,omitempty"`
@@ -89,6 +90,9 @@ func main() {
 	}
 	if cfg.ProxyType == "HTTP" {
 		ForwardPort = 80
+	}
+	if cfg.ForwardPort == 0 {
+		cfg.ForwardPort = ForwardPort
 	}
 	for _, rule := range cfg.ForwardRules { // 输出规则中的所有域名
 		serviceLogger(fmt.Sprintf("加载规则: %v", rule), 32, false)
@@ -160,15 +164,15 @@ func serve(c net.Conn, raddr string) {
 	}
 
 	if cfg.AllowAllHosts { // 如果 allow_all_hosts 为 true 则代表无需判断 SNI 域名
-		serviceLogger(fmt.Sprintf("转发目标: %s:%d", ServerName, ForwardPort), 32, false)
-		forward(c, buf[:n], fmt.Sprintf("%s:%d", ServerName, ForwardPort), raddr)
+		serviceLogger(fmt.Sprintf("转发目标: %s:%d", ServerName, cfg.ForwardPort), 32, false)
+		forward(c, buf[:n], fmt.Sprintf("%s:%d", ServerName, cfg.ForwardPort), raddr)
 		return
 	}
 
 	for _, rule := range cfg.ForwardRules { // 循环遍历 Rules 中指定的白名单域名
 		if strings.Contains(ServerName, rule) { // 如果 SNI 域名中包含 Rule 白名单域名（例如 www.aa.com 中包含 aa.com）则转发该连接
-			serviceLogger(fmt.Sprintf("转发目标: %s:%d", ServerName, ForwardPort), 32, false)
-			forward(c, buf[:n], fmt.Sprintf("%s:%d", ServerName, ForwardPort), raddr)
+			serviceLogger(fmt.Sprintf("转发目标: %s:%d", ServerName, cfg.ForwardPort), 32, false)
+			forward(c, buf[:n], fmt.Sprintf("%s:%d", ServerName, cfg.ForwardPort), raddr)
 		}
 	}
 }

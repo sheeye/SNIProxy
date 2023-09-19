@@ -174,7 +174,7 @@ func getHTTPServerName(buf []byte) string {
 	reg := regexp.MustCompile(`(?i)[\r\n]Host:\s*([^\s\r\n]+)[\r\n]`)
 	match := reg.FindStringSubmatch(txt)
 	if match == nil {
-		serviceLogger("未匹配到Host", 31, true)
+		serviceLogger("未匹配到Host:"+txt, 31, true)
 		return ""
 	}
 	return match[1]

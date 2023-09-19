@@ -143,6 +143,10 @@ func serve(c net.Conn, raddr string) {
 		return
 	}
 
+	if n == 0 {
+		return
+	}
+
 	ServerName := ""
 	if cfg.ProxyType == "HTTP" {
 		ServerName = getHTTPServerName(buf[:n])

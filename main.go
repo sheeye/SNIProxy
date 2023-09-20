@@ -141,7 +141,7 @@ func serve(c net.Conn, raddr string, port int) {
 	}
 
 	if n == 0 {
-		serviceLogger("无数据传入, 忽略...", 31, true)
+		serviceLogger("无数据传入, 忽略...", 31, false)
 		return
 	}
 
@@ -153,7 +153,7 @@ func serve(c net.Conn, raddr string, port int) {
 	}
 
 	if ServerName == "" {
-		serviceLogger("未找到 SNI 域名, 忽略...", 31, true)
+		serviceLogger("未找到域名, 忽略...", 31, false)
 		return
 	}
 

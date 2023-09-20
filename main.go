@@ -174,9 +174,15 @@ func serve(c net.Conn, raddr string, port int) {
 
 func getRequestType(buf []byte) string {
 	n := len(buf)
-	if n < 5 return "HTTP"
-	if recordType(buf[0]) != recordTypeHandshake return "HTTP"
-	if buf[5] != typeClientHello return "HTTP"
+	if n < 5 {
+		return "HTTP"
+	}
+	if recordType(buf[0]) != recordTypeHandshake {
+		return "HTTP"
+	}
+	if buf[5] != typeClientHello {
+		return "HTTP"
+	}
 	return "HTTPS"
 }
 

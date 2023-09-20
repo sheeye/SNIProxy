@@ -1,7 +1,6 @@
 # 监听端口（注意需要引号）
 listen_addr: ":443"
-# 代理类型
-proxy_type: "HTTPS"
+
 # 可选：启用 Socks5 前置代理
 #enable_socks5: true
 # 可选：配置 Socks5 代理地址

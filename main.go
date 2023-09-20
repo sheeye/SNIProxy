@@ -23,7 +23,6 @@ var (
 	LogFilePath    string // 日志文件
 	EnableDebug    bool   // 调试模式（详细日志）
 
-	ForwardPort = 443       // 要转发至的目标端口
 	cfg         configModel // 配置文件结构
 )
 
@@ -32,7 +31,6 @@ type configModel struct {
 	ForwardRules  []string `yaml:"rules,omitempty"`
 	ListenAddr    string   `yaml:"listen_addr,omitempty"`
 	ProxyType     string   `yaml:"proxy_type,omitempty"`
-	ForwardPort   int      `yaml:"forward_port,omitempty"`
 	EnableSocks   bool     `yaml:"enable_socks5,omitempty"`
 	SocksAddr     string   `yaml:"socks_addr,omitempty"`
 	AllowAllHosts bool     `yaml:"allow_all_hosts,omitempty"`
@@ -87,12 +85,6 @@ func main() {
 	}
 	if cfg.ProxyType != "HTTPS" {
 		cfg.ProxyType = "HTTP"
-	}
-	if cfg.ProxyType == "HTTP" {
-		ForwardPort = 80
-	}
-	if cfg.ForwardPort == 0 {
-		cfg.ForwardPort = ForwardPort
 	}
 	for _, rule := range cfg.ForwardRules { // 输出规则中的所有域名
 		serviceLogger(fmt.Sprintf("加载规则: %v", rule), 32, false)

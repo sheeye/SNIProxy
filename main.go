@@ -145,8 +145,9 @@ func serve(c net.Conn, raddr string, port int) {
 		return
 	}
 
+	RequestType := getRequestType(buf[:n])
 	ServerName := ""
-	if cfg.ProxyType == "HTTP" {
+	if RequestType == "HTTP" {
 		ServerName = getHTTPServerName(buf[:n])
 	} else {
 		ServerName = getSNIServerName(buf[:n]) // 获取 SNI 域名
@@ -169,6 +170,14 @@ func serve(c net.Conn, raddr string, port int) {
 			forward(c, buf[:n], fmt.Sprintf("%s:%d", ServerName, port), raddr)
 		}
 	}
+}
+
+func getRequestType(buf []byte) string {
+	n := len(buf)
+	if n < 5 return "HTTP"
+	if recordType(buf[0]) != recordTypeHandshake return "HTTP"
+	if buf[5] != typeClientHello return "HTTP"
+	return "HTTPS"
 }
 
 func getHTTPServerName(buf []byte) string {

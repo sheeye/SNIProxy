@@ -29,7 +29,7 @@ var (
 // 配置文件结构
 type configModel struct {
 	ForwardRules  []string `yaml:"rules,omitempty"`
-	ListenAddr    string   `yaml:"listen_addr,omitempty"`
+	ListenAddrs   []string `yaml:"listen_addrs,omitempty"`
 	EnableSocks   bool     `yaml:"enable_socks5,omitempty"`
 	SocksAddr     string   `yaml:"socks_addr,omitempty"`
 	AllowAllHosts bool     `yaml:"allow_all_hosts,omitempty"`
@@ -93,32 +93,37 @@ func main() {
 func startSniProxy() {
 	_, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	listener, err := net.Listen("tcp", cfg.ListenAddr)
-	if err != nil {
-		serviceLogger(fmt.Sprintf("监听失败: %v", err), 31, false)
-		os.Exit(1)
-	}
-	serviceLogger(fmt.Sprintf("开始监听: %v", listener.Addr()), 0, false)
 
-	go func(listener net.Listener) {
-		defer listener.Close()
-		port := listener.Addr().(*net.TCPAddr).Port
-		for {
-			connection, err := listener.Accept()
-			if err != nil {
-				serviceLogger(fmt.Sprintf("接受连接请求时出错: %v", err), 31, false)
-				continue
-			}
-			raddr := connection.RemoteAddr().(*net.TCPAddr)
-			serviceLogger("连接来自: "+raddr.String(), 32, false)
-			go serve(connection, raddr.String(), port) // 有新连接进来，启动一个新线程处理
+	for _, ListenAddr := range cfg.ListenAddrs {
+		listener, err := net.Listen("tcp", ListenAddr)
+		if err != nil {
+			serviceLogger(fmt.Sprintf("监听失败(" + ListenAddr + "): %v", err), 31, false)
+			continue
 		}
-	}(listener)
+		serviceLogger(fmt.Sprintf("开始监听: %v", listener.Addr()), 0, false)
+		go listen(listener)
+	}
+	
 	ch := make(chan os.Signal, 2)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	s := <-ch
 	cancel()
 	fmt.Printf("\n接收到信号 %s, 退出.\n", s)
+}
+
+func listen(listener net.Listener) {
+	defer listener.Close()
+	port := listener.Addr().(*net.TCPAddr).Port
+	for {
+		connection, err := listener.Accept()
+		if err != nil {
+			serviceLogger(fmt.Sprintf("接受连接请求时出错: %v", err), 31, false)
+			continue
+		}
+		raddr := connection.RemoteAddr().(*net.TCPAddr)
+		serviceLogger("连接来自: "+raddr.String(), 32, false)
+		go serve(connection, raddr.String(), port) // 有新连接进来，启动一个新线程处理
+	}
 }
 
 // 处理新连接

@@ -30,7 +30,6 @@ var (
 type configModel struct {
 	ForwardRules  []string `yaml:"rules,omitempty"`
 	ListenAddr    string   `yaml:"listen_addr,omitempty"`
-	ProxyType     string   `yaml:"proxy_type,omitempty"`
 	EnableSocks   bool     `yaml:"enable_socks5,omitempty"`
 	SocksAddr     string   `yaml:"socks_addr,omitempty"`
 	AllowAllHosts bool     `yaml:"allow_all_hosts,omitempty"`
@@ -80,19 +79,12 @@ func main() {
 		serviceLogger("配置文件中 rules 不能为空（除非 allow_all_hosts 等于 true）!", 31, false)
 		os.Exit(1)
 	}
-	if len(cfg.ProxyType) <= 0 {
-		cfg.ProxyType = "HTTPS"
-	}
-	if cfg.ProxyType != "HTTPS" {
-		cfg.ProxyType = "HTTP"
-	}
 	for _, rule := range cfg.ForwardRules { // 输出规则中的所有域名
 		serviceLogger(fmt.Sprintf("加载规则: %v", rule), 32, false)
 	}
 	serviceLogger(fmt.Sprintf("调试模式: %v", EnableDebug), 32, false)
 	serviceLogger(fmt.Sprintf("前置代理: %v", cfg.EnableSocks), 32, false)
 	serviceLogger(fmt.Sprintf("任意域名: %v", cfg.AllowAllHosts), 32, false)
-	serviceLogger(fmt.Sprintf("代理类型: %v", cfg.ProxyType), 32, false)
 
 	startSniProxy() // 启动 SNI Proxy
 }

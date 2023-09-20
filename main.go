@@ -148,6 +148,7 @@ func serve(c net.Conn, raddr string) {
 	}
 
 	if n == 0 {
+		serviceLogger("无数据传入, 忽略...", 31, true)
 		return
 	}
 
@@ -179,10 +180,10 @@ func serve(c net.Conn, raddr string) {
 
 func getHTTPServerName(buf []byte) string {
 	txt := string(buf)
-	reg := regexp.MustCompile(`(?i)[\r\n]Host:\s*([^:\s\r\n]+)[:\r\n]`)
+	reg := regexp.MustCompile(`(?i)[\r\n]Host:\s*([A-Za-z0-9\-\.]+)[:\r\n]`)
 	match := reg.FindStringSubmatch(txt)
 	if match == nil {
-		serviceLogger("未匹配到Host:"+txt, 31, true)
+		serviceLogger("未匹配到Host", 31, true)
 		return ""
 	}
 	return match[1]

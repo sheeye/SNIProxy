@@ -1,3 +1,6 @@
 builds:
   - ldflags:
-      - -s -w -X main.version=v1.0.0
+      - -s -w -X main.version=v1.0.2
+archives:
+  - files:
+      - config.yaml

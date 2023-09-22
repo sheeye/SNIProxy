@@ -83,6 +83,7 @@ func main() {
 	for _, rule := range cfg.ForwardRules { // 输出规则中的所有域名
 		serviceLogger(fmt.Sprintf("加载规则: %v", rule), 32, false)
 	}
+	regHost = regexp.MustCompile(`(?i)[\r\n]Host:\s*([A-Za-z0-9\-\.]+)[:\r\n]`)
 	serviceLogger(fmt.Sprintf("调试模式: %v", EnableDebug), 32, false)
 	serviceLogger(fmt.Sprintf("前置代理: %v", cfg.EnableSocks), 32, false)
 	serviceLogger(fmt.Sprintf("任意域名: %v", cfg.AllowAllHosts), 32, false)
@@ -186,9 +187,6 @@ func getRequestType(buf []byte) string {
 
 func getHTTPServerName(buf []byte) string {
 	txt := string(buf)
-	if regHost == nil {
-		regHost := regexp.MustCompile(`(?i)[\r\n]Host:\s*([A-Za-z0-9\-\.]+)[:\r\n]`)
-	}
 	match := regHost.FindStringSubmatch(txt)
 	if match == nil {
 		serviceLogger("未匹配到Host", 31, true)

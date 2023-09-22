@@ -251,34 +251,20 @@ func forward(conn net.Conn, data []byte, dst string, raddr string) {
 		return
 	}
 
-	conChk := make(chan int)
-	go ioReflector(backend, conn, false, conChk, raddr, dst)
-	go ioReflector(conn, backend, true, conChk, raddr, dst)
-	<-conChk
+	go ioReflector(conn, backend, true, raddr, dst)
+	ioReflector(backend, conn, false, raddr, dst)
 }
 
 // ioReflector 函数接收一个 io.WriteCloser 类型的写入对象 dst、一个 io.Reader 类型的读取对象 src、一个 bool 类型的 isToClient、一个 chan int 类型的 conChk，以及两个字符串类型的 raddr 和 dsts
 // 该函数使用 io.Copy 函数将 src 中读取到的数据流复制到 dst 中，然后将转发的字节数写入日志
-// 最后，该函数关闭 dst 连接，并向 conChk 通道发送一个信号以表示连接已关闭。
-func ioReflector(dst io.WriteCloser, src io.Reader, isToClient bool, conChk chan int, raddr string, dsts string) {
+func ioReflector(dst io.WriteCloser, src io.Reader, isToClient bool, raddr string, dsts string) {
 	// 将 IO 流反映到另一个
-	defer onDisconnect(dst, conChk)
 	written, _ := io.Copy(dst, src)
 	if isToClient {
 		serviceLogger(fmt.Sprintf("[%v] -> [%v] %d bytes", dsts, raddr, written), 33, true)
 	} else {
 		serviceLogger(fmt.Sprintf("[%v] -> [%v] %d bytes", raddr, dsts, written), 33, true)
 	}
-	dst.Close()
-	conChk <- 1
-}
-
-// onDisconnect 函数接收一个 io.WriteCloser 类型的写入对象 dst 和一个 chan int 类型的 conChk
-// 该函数在 dst 连接关闭时被调用，并向 conChk 通道发送一个信号以表示连接已关闭
-func onDisconnect(dst io.WriteCloser, conChk chan int) {
-	// 关闭时 -> 强制断开另一对连接
-	dst.Close()
-	conChk <- 1
 }
 
 // 解析 Client Hello 消息

@@ -15,7 +15,7 @@ builds:
     goamd64:
       - v1
     ldflags:
-      - -s -w -X main.version=v1.0.2
+      - -s -w -X main.version=v1.0.0
 archives:
   - files:
       - config.yaml

@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set version
-      run: sed 's/v1.0.0/${{ github.ref_name }}/g' .goreleaser.yaml
+      run: sed -i 's/v1.0.0/${{ github.ref_name }}/g' .goreleaser.yaml
     - name: Set up Go
       uses: actions/setup-go@v3
       with:

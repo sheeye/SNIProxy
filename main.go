@@ -24,7 +24,7 @@ var (
 	EnableDebug bool   // 调试模式（详细日志）
 
 	cfg configModel // 配置文件结构
-	regHost regexp.Regexp //匹配Host的正则对象
+	regHost Regexp //匹配Host的正则对象
 )
 
 // 配置文件结构

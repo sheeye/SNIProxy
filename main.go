@@ -183,10 +183,10 @@ func getRequestType(buf []byte) string {
 	return "HTTPS"
 }
 
+reghost := regexp.MustCompile(`(?i)[\r\n]Host:\s*([A-Za-z0-9\-\.]+)[:\r\n]`)
 func getHTTPServerName(buf []byte) string {
 	txt := string(buf)
-	reg := regexp.MustCompile(`(?i)[\r\n]Host:\s*([A-Za-z0-9\-\.]+)[:\r\n]`)
-	match := reg.FindStringSubmatch(txt)
+	match := reghost.FindStringSubmatch(txt)
 	if match == nil {
 		serviceLogger("未匹配到Host", 31, true)
 		return ""

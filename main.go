@@ -20,10 +20,11 @@ var (
 	version string // 编译时写入版本号
 
 	ConfigFilePath string // 配置文件
-	LogFilePath    string // 日志文件
-	EnableDebug    bool   // 调试模式（详细日志）
+	LogFilePath string // 日志文件
+	EnableDebug bool   // 调试模式（详细日志）
 
-	cfg         configModel // 配置文件结构
+	cfg configModel // 配置文件结构
+	regHost regexp.Regexp //匹配Host的正则对象
 )
 
 // 配置文件结构
@@ -183,9 +184,11 @@ func getRequestType(buf []byte) string {
 	return "HTTPS"
 }
 
-reghost := regexp.MustCompile(`(?i)[\r\n]Host:\s*([A-Za-z0-9\-\.]+)[:\r\n]`)
 func getHTTPServerName(buf []byte) string {
 	txt := string(buf)
+	if reghost == nil {
+		reghost := regexp.MustCompile(`(?i)[\r\n]Host:\s*([A-Za-z0-9\-\.]+)[:\r\n]`)
+	}
 	match := reghost.FindStringSubmatch(txt)
 	if match == nil {
 		serviceLogger("未匹配到Host", 31, true)

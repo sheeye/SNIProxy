@@ -12,10 +12,10 @@ listen_addrs:
 #allow_all_hosts: true
 
 # 可选：转发规则
-# host是请求域名，为*则匹配所有域名
+# host是请求域名，为*则匹配所有域名，高级域名可匹配低级域名，如baidu.com，可匹配www.baidu.com
 # target是转发目标，端口省略则转发端口等于请求端口，完全省略则转发给请求域名
 rules:
-  - host: www.baidu.com
+  - host: baidu.com
     target: 111.111.111.111:443
   - host: www.github.com
     target: 123.123.123.123

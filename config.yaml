@@ -8,10 +8,16 @@ listen_addrs:
 # 可选：配置 Socks5 代理地址
 #socks_addr: 127.0.0.1:40000
 
-# 可选：允许所有域名（会忽略下面的 rules 列表）
+# 可选：是否允许所有域名转发
 #allow_all_hosts: true
 
-# 可选：仅允许指定域名
+# 可选：转发规则
+# host是请求域名，为*则匹配所有域名
+# target是转发目标，端口省略则转发端口等于请求端口，完全省略则转发给请求域名
 rules:
-  - example.com
-  - b.example2.com
+  - host: www.baidu.com
+    target: 111.111.111.111:443
+  - host: www.github.com
+    target: 123.123.123.123
+  - host: www.test.com
+  - host: *

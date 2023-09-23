@@ -24,15 +24,21 @@ var (
 	EnableDebug bool   // 调试模式（详细日志）
 
 	cfg configModel // 配置文件结构
+	hostmap map[string]string //所有Host的集合
 )
 
 // 配置文件结构
 type configModel struct {
-	ForwardRules  []string `yaml:"rules,omitempty"`
+	ForwardRules  []Rule   `yaml:"rules,omitempty"`
 	ListenAddrs   []string `yaml:"listen_addrs,omitempty"`
 	EnableSocks   bool     `yaml:"enable_socks5,omitempty"`
 	SocksAddr     string   `yaml:"socks_addr,omitempty"`
 	AllowAllHosts bool     `yaml:"allow_all_hosts,omitempty"`
+}
+
+type Rule struct {
+	Host   string `yaml:"host,omitempty"`
+	Target string `yaml:"target,omitempty"`
 }
 
 func init() {
@@ -79,8 +85,14 @@ func main() {
 		serviceLogger("配置文件中 rules 不能为空（除非 allow_all_hosts 等于 true）!", 31, false)
 		os.Exit(1)
 	}
+	hostmap = make(map[string]string)
 	for _, rule := range cfg.ForwardRules { // 输出规则中的所有域名
-		serviceLogger(fmt.Sprintf("加载规则: %v", rule), 32, false)
+		hostmap[strings.ToLower(rule.Host)] = rule.Target
+		if len(rule.Target) == 0 {
+			serviceLogger(fmt.Sprintf("加载规则: %v", rule.Host), 32, false)
+		} else {
+			serviceLogger(fmt.Sprintf("加载规则: %v -> %v", rule.Host, rule.Target), 32, false)
+		}
 	}
 	serviceLogger(fmt.Sprintf("调试模式: %v", EnableDebug), 32, false)
 	serviceLogger(fmt.Sprintf("前置代理: %v", cfg.EnableSocks), 32, false)
@@ -155,18 +167,46 @@ func serve(c net.Conn, raddr string, port int) {
 		return
 	}
 
-	if cfg.AllowAllHosts { // 如果 allow_all_hosts 为 true 则代表无需判断 SNI 域名
-		serviceLogger(fmt.Sprintf("转发目标: %s:%d", ServerName, port), 32, false)
-		forward(c, buf[:n], fmt.Sprintf("%s:%d", ServerName, port), raddr)
-		return
-	}
-
-	for _, rule := range cfg.ForwardRules { // 循环遍历 Rules 中指定的白名单域名
-		if strings.Contains(ServerName, rule) { // 如果 SNI 域名中包含 Rule 白名单域名（例如 www.aa.com 中包含 aa.com）则转发该连接
-			serviceLogger(fmt.Sprintf("转发目标: %s:%d", ServerName, port), 32, false)
-			forward(c, buf[:n], fmt.Sprintf("%s:%d", ServerName, port), raddr)
+	host := strings.ToLower(ServerName)
+	target, ok := hostmap[host]
+	if !ok {
+		hostarr := strings.Split(host, ".")
+		for i := len(hostarr) - 1; i >= 1; i-- {
+			host = strings.Join(hostarr[i:], ".")
+			target, ok = hostmap[host]
+			if ok {
+				break
+			}
 		}
 	}
+	if !ok {
+		target, ok = hostmap["*"]
+	}
+	if !ok {
+		if !cfg.AllowAllHosts {
+			return
+		}
+		target = ""
+	}
+	if len(target) == 0 {
+		target = fmt.Sprintf("%s:%d", ServerName, port)
+	}
+	serviceLogger(fmt.Sprintf("转发目标: %s", target), 32, false)
+	forward(c, buf[:n], target, raddr)
+	return
+	
+	//if cfg.AllowAllHosts { // 如果 allow_all_hosts 为 true 则代表无需判断 SNI 域名
+	//	serviceLogger(fmt.Sprintf("转发目标: %s:%d", ServerName, port), 32, false)
+	//	forward(c, buf[:n], fmt.Sprintf("%s:%d", ServerName, port), raddr)
+	//	return
+	//}
+
+	//for _, rule := range cfg.ForwardRules { // 循环遍历 Rules 中指定的白名单域名
+	//	if strings.Contains(ServerName, rule) { // 如果 SNI 域名中包含 Rule 白名单域名（例如 www.aa.com 中包含 aa.com）则转发该连接
+	//		serviceLogger(fmt.Sprintf("转发目标: %s:%d", ServerName, port), 32, false)
+	//		forward(c, buf[:n], fmt.Sprintf("%s:%d", ServerName, port), raddr)
+	//	}
+	//}
 }
 
 func getRequestType(buf []byte) string {

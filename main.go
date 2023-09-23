@@ -171,7 +171,7 @@ func serve(c net.Conn, raddr string, port int) {
 	target, ok := hostmap[host]
 	if !ok {
 		hostarr := strings.Split(host, ".")
-		for i := 1; i < len(hostarr); i-- {
+		for i := 1; i < len(hostarr); i++ {
 			host = strings.Join(hostarr[i:], ".")
 			target, ok = hostmap[host]
 			if ok {

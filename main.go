@@ -190,23 +190,14 @@ func serve(c net.Conn, raddr string, port int) {
 	}
 	if len(target) == 0 {
 		target = fmt.Sprintf("%s:%d", ServerName, port)
+	} else {
+		if(!strings.Contains(target, ":")) {
+			target += ":" + port
+		}
 	}
 	serviceLogger(fmt.Sprintf("转发目标: %s", target), 32, false)
 	forward(c, buf[:n], target, raddr)
 	return
-	
-	//if cfg.AllowAllHosts { // 如果 allow_all_hosts 为 true 则代表无需判断 SNI 域名
-	//	serviceLogger(fmt.Sprintf("转发目标: %s:%d", ServerName, port), 32, false)
-	//	forward(c, buf[:n], fmt.Sprintf("%s:%d", ServerName, port), raddr)
-	//	return
-	//}
-
-	//for _, rule := range cfg.ForwardRules { // 循环遍历 Rules 中指定的白名单域名
-	//	if strings.Contains(ServerName, rule) { // 如果 SNI 域名中包含 Rule 白名单域名（例如 www.aa.com 中包含 aa.com）则转发该连接
-	//		serviceLogger(fmt.Sprintf("转发目标: %s:%d", ServerName, port), 32, false)
-	//		forward(c, buf[:n], fmt.Sprintf("%s:%d", ServerName, port), raddr)
-	//	}
-	//}
 }
 
 func getRequestType(buf []byte) string {

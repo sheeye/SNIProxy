@@ -171,7 +171,7 @@ func serve(c net.Conn, raddr string, port int) {
 	target, ok := hostmap[host]
 	if !ok {
 		hostarr := strings.Split(host, ".")
-		for i := len(hostarr) - 1; i >= 1; i-- {
+		for i := 1; i < len(hostarr); i-- {
 			host = strings.Join(hostarr[i:], ".")
 			target, ok = hostmap[host]
 			if ok {
@@ -197,7 +197,6 @@ func serve(c net.Conn, raddr string, port int) {
 	}
 	serviceLogger(fmt.Sprintf("转发目标: %s", target), 32, false)
 	forward(c, buf[:n], target, raddr)
-	return
 }
 
 func getRequestType(buf []byte) string {

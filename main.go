@@ -26,8 +26,6 @@ var (
 	cfg configModel // 配置文件结构
 )
 
-var regHost = regexp.MustCompile(`(?i)[\r\n]Host:\s*([A-Za-z0-9\-\.]+)[:\r\n]`)
-
 // 配置文件结构
 type configModel struct {
 	ForwardRules  []string `yaml:"rules,omitempty"`
@@ -187,7 +185,8 @@ func getRequestType(buf []byte) string {
 
 func getHTTPServerName(buf []byte) string {
 	txt := string(buf)
-	match := regHost.FindStringSubmatch(txt)
+	reg := regexp.MustCompile(`(?i)[\r\n]Host:\s*([A-Za-z0-9\-\.]+)[:\r\n]`)
+	match := reg.FindStringSubmatch(txt)
 	if match == nil {
 		serviceLogger("未匹配到Host", 31, true)
 		return ""

@@ -105,7 +105,7 @@ func main() {
 		}
 	}
 	targetmap = make(map[string]string)
-	for _, mapping := cfg.TargetMapping {
+	for _, mapping := range cfg.TargetMapping { //输出目标映射
 		targetmap[mapping.old] = mapping.new
 		serviceLogger(fmt.Sprintf("目标映射: %v -> %v", mapping.old, mapping.new), 32, false)
 	}

@@ -66,7 +66,7 @@ https://github.com/XIU2/SNIProxy
     -h
         帮助说明
 `
-	flag.StringVar(&ConfigFilePath, "c", "config.yaml", "配置文件")
+	flag.StringVar(&ConfigFilePath, "c", "./config.yaml", "配置文件")
 	flag.StringVar(&LogFilePath, "l", "", "日志文件")
 	flag.BoolVar(&EnableDebug, "d", false, "调试模式")
 	flag.BoolVar(&printVersion, "v", false, "程序版本")

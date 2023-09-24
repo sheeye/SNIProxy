@@ -20,7 +20,7 @@ rules:
   - host: www.github.com
     target: 123.123.123.123
   - host: www.test.com
-  - host: *
+  - host: "*"
 
 #可选：目标映射
 #对转发目标进行映射，解决同时支持http和https时端口不一样的映射问题

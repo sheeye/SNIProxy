@@ -92,6 +92,7 @@ func main() {
 		serviceLogger("配置文件中 rules 不能为空（除非 allow_all_hosts 等于 true）!", 31, false)
 		os.Exit(1)
 	}
+	serviceLogger(fmt.Sprintf("当前版本: %v", version), 32, false)
 	serviceLogger(fmt.Sprintf("调试模式: %v", EnableDebug), 32, false)
 	serviceLogger(fmt.Sprintf("前置代理: %v", cfg.EnableSocks), 32, false)
 	serviceLogger(fmt.Sprintf("任意域名: %v", cfg.AllowAllHosts), 32, false)

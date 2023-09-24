@@ -24,21 +24,28 @@ var (
 	EnableDebug bool   // 调试模式（详细日志）
 
 	cfg configModel // 配置文件结构
-	hostmap map[string]string //所有Host的集合
+	rulemap map[string]string //所有Rule的集合
+	targetmap map[string]string //转发目标替换集合
 )
 
 // 配置文件结构
 type configModel struct {
-	ForwardRules  []Rule   `yaml:"rules,omitempty"`
-	ListenAddrs   []string `yaml:"listen_addrs,omitempty"`
-	EnableSocks   bool     `yaml:"enable_socks5,omitempty"`
-	SocksAddr     string   `yaml:"socks_addr,omitempty"`
-	AllowAllHosts bool     `yaml:"allow_all_hosts,omitempty"`
+	ForwardRules  []Rule    `yaml:"rules,omitempty"`
+	ListenAddrs   []string  `yaml:"listen_addrs,omitempty"`
+	TargetMapping []Mapping `yaml:"target_mapping,omitempty"`
+	EnableSocks   bool      `yaml:"enable_socks5,omitempty"`
+	SocksAddr     string    `yaml:"socks_addr,omitempty"`
+	AllowAllHosts bool      `yaml:"allow_all_hosts,omitempty"`
 }
 
 type Rule struct {
 	Host   string `yaml:"host,omitempty"`
 	Target string `yaml:"target,omitempty"`
+}
+
+type Mapping struct {
+	Old string `yaml:"old,omitempty"`
+	New string `yaml:"new,omitempty"`
 }
 
 func init() {
@@ -85,18 +92,23 @@ func main() {
 		serviceLogger("配置文件中 rules 不能为空（除非 allow_all_hosts 等于 true）!", 31, false)
 		os.Exit(1)
 	}
-	hostmap = make(map[string]string)
+	serviceLogger(fmt.Sprintf("调试模式: %v", EnableDebug), 32, false)
+	serviceLogger(fmt.Sprintf("前置代理: %v", cfg.EnableSocks), 32, false)
+	serviceLogger(fmt.Sprintf("任意域名: %v", cfg.AllowAllHosts), 32, false)
+	rulemap = make(map[string]string)
 	for _, rule := range cfg.ForwardRules { // 输出规则中的所有域名
-		hostmap[strings.ToLower(rule.Host)] = rule.Target
+		rulemap[strings.ToLower(rule.Host)] = rule.Target
 		if len(rule.Target) == 0 {
 			serviceLogger(fmt.Sprintf("加载规则: %v", rule.Host), 32, false)
 		} else {
 			serviceLogger(fmt.Sprintf("加载规则: %v -> %v", rule.Host, rule.Target), 32, false)
 		}
 	}
-	serviceLogger(fmt.Sprintf("调试模式: %v", EnableDebug), 32, false)
-	serviceLogger(fmt.Sprintf("前置代理: %v", cfg.EnableSocks), 32, false)
-	serviceLogger(fmt.Sprintf("任意域名: %v", cfg.AllowAllHosts), 32, false)
+	targetmap = make(map[string]string)
+	for _, mapping := cfg.TargetMapping {
+		targetmap[mapping.old] = mapping.new
+		serviceLogger(fmt.Sprintf("目标映射: %v -> %v", mapping.old, mapping.new), 32, false)
+	}
 
 	startSniProxy() // 启动 SNI Proxy
 }
@@ -167,20 +179,22 @@ func serve(c net.Conn, raddr string, port int) {
 		return
 	}
 
+	target := "";
+	ok := false;
 	host := strings.ToLower(ServerName)
-	target, ok := hostmap[host]
+	target, ok = rulemap[host]
 	if !ok {
 		hostarr := strings.Split(host, ".")
 		for i := 1; i < len(hostarr); i++ {
 			host = strings.Join(hostarr[i:], ".")
-			target, ok = hostmap[host]
+			target, ok = rulemap[host]
 			if ok {
 				break
 			}
 		}
 	}
 	if !ok {
-		target, ok = hostmap["*"]
+		target, ok = rulemap["*"]
 	}
 	if !ok {
 		if !cfg.AllowAllHosts {
@@ -195,6 +209,13 @@ func serve(c net.Conn, raddr string, port int) {
 			target = fmt.Sprintf("%s:%d", target, port)
 		}
 	}
+
+	mapping := ""
+	mapping, ok = targetmap[target]
+	if ok {
+		target = mapping
+	}
+	
 	serviceLogger(fmt.Sprintf("转发目标: %s", target), 32, false)
 	forward(c, buf[:n], target, raddr)
 }

@@ -10,11 +10,6 @@
 
 SNI Proxy 是一个无需加解密的反向代理工具，根据传入的 SNI(域名) 来自动转发流量至该域名的源站。
 
-> _分享我其他开源项目：[**TrackersList.com** - 全网热门 BT Tracker 列表！有效提高 BT 下载速度~](https://github.com/XIU2/TrackersListCollection) <img src="https://img.shields.io/github/stars/XIU2/TrackersListCollection.svg?style=flat-square&label=Star&color=4285dd&logo=github" height="16px" />_  
-> _[**CloudflareSpeedTest** - 🌩「自选优选 IP」测试 Cloudflare CDN 延迟和速度，获取最快 IP~](https://github.com/XIU2/CloudflareSpeedTest) <img src="https://img.shields.io/github/stars/XIU2/CloudflareSpeedTest.svg?style=flat-square&label=Star&color=4285dd&logo=github" height="16px" />_  
-> _[**UserScript** - 🐵 Github 高速下载、知乎增强、自动无缝翻页、护眼模式 等十几个**油猴脚本**~](https://github.com/XIU2/UserScript) <img src="https://img.shields.io/github/stars/XIU2/UserScript.svg?style=flat-square&label=Star&color=4285dd&logo=github" height="16px" />_
-
-
 ****
 
 ## \# 软件介绍
@@ -22,6 +17,9 @@ SNI Proxy 是一个无需加解密的反向代理工具，根据传入的 SNI(�
 1. **支持** 全平台、全系统（Go 语言特性）
 2. **支持** Socks5 前置代理（比如可以套 WARP+）
 3. **支持** 允许所有域名  仅允许指定域名（包含域名自身及其所有子域名）
+4. **支持** 转发HTTP和HTTPS数据
+5. **支持** 同时监听多个端口
+6. **支持** 自定义转发目标
 
 > 注意！SNI Proxy 仅为我个人自写自用，**可靠性、稳定性**等方面**不如专业的商业软件（如 Nginx、HAProxy）**，因此在正式的**生产环境下不建议使用本软件**，如造成损失，根据 GPL-3.0 本项目无需承担责任（溜了溜了~
 
@@ -42,7 +40,7 @@ SNI Proxy 的工作流程大概如下：
 访问 example.com <=> SNIProxy <=> Socks5 <=> 源站(example.com)
 ```
 
-> SNIProxy 本质也算是一种**端口转发（中转）**，但不同于端口转发只能指定一个**固定的目标 IP**，SNIProxy 可以通过 DNS 解析传入的域名来获得**灵活的目标 IP**（传入不同的域名走不同目标 IP，可**同时存在**且**互不干扰**）。
+> SNIProxy 本质也算是一种**端口转发（中转）**，但不同于端口转发只能指定一个**固定的目标 IP**，SNIProxy 可以通过配置文件指定**灵活的目标 IP**（传入不同的域名走不同目标 IP，可**同时存在**且**互不干扰**）。
 
 ****
 
@@ -57,14 +55,13 @@ SNI Proxy 的工作流程大概如下：
 
 下载已编译好的可执行文件并解压：
 
-1. [Github Releases](https://github.com/XIU2/SNIProxy/releases)  
-2. [蓝奏云](https://pan.lanzouj.com/b077bn2ri)(密码:xiu2)
+1. [Github Releases](https://github.com/sheeye/SNIProxy/releases)  
 
 ### 配置
 
 找到配置文件 `config.yaml` 右键菜单 - 打开方式 - 记事本。
 
-根据下面的 [配置文件说明](https://github.com/XIU2/SNIProxy#-配置文件说明-configyaml) 来自定义配置内容并保存。
+根据下面的 [配置文件说明](https://github.com/sheeye/SNIProxy#-配置文件说明-configyaml) 来自定义配置内容并保存。
 
 ### 运行
 
@@ -91,7 +88,7 @@ sniproxy.exe -c "config.yaml"
 
 ****
 
-以下命令仅为示例，版本号和文件名请前往 [**Releases**](https://github.com/XIU2/SNIProxy/releases) 查看。
+以下命令仅为示例，版本号和文件名请前往 [**Releases**](https://github.com/sheeye/SNIProxy/releases) 查看。
 
 ```yaml
 # 如果是第一次使用，则建议创建新文件夹（后续更新时，跳过该步骤）
@@ -101,14 +98,14 @@ mkdir sniproxy
 cd sniproxy
 
 # 下载 sniproxy 压缩包（自行根据需求替换 URL 中 [版本号] 和 [文件名]）
-wget -N https://github.com/XIU2/SNIProxy/releases/download/v1.0.0/sniproxy_linux_amd64.tar.gz
+wget -N https://github.com/sheeye/SNIProxy/releases/download/v1.0.4/SNIProxy_1.0.4_linux_amd64.tar.gz
 # 如果你是在国内服务器上下载，那么请使用下面这几个镜像加速：
-# wget -N https://download.fastgit.org/XIU2/SNIProxy/releases/download/v1.0.0/sniproxy_linux_amd64.tar.gz
-# wget -N https://ghproxy.com/https://github.com/XIU2/SNIProxy/releases/download/v1.0.0/sniproxy_linux_amd64.tar.gz
-# 如果下载失败的话，尝试删除 -N 参数（如果是为了更新，则记得提前删除旧压缩包 rm sniproxy_linux_amd64.tar.gz ）
+# wget -N https://download.fastgit.org/sheeye/SNIProxy/releases/download/v1.0.4/SNIProxy_1.0.4_linux_amd64.tar.gz
+# wget -N https://ghproxy.com/https://github.com/sheeye/SNIProxy/releases/download/v1.0.4/SNIProxy_1.0.4_linux_amd64.tar.gz
+# 如果下载失败的话，尝试删除 -N 参数（如果是为了更新，则记得提前删除旧压缩包）
 
 # 解压（不需要删除旧文件，会直接覆盖，自行根据需求替换 文件名）
-tar -zxf sniproxy_linux_amd64.tar.gz
+tar -zxf SNIProxy_1.0.4_linux_amd64.tar.gz
 
 # 赋予执行权限
 chmod +x sniproxy
@@ -126,9 +123,9 @@ nano config.yaml
 nohup ./sniproxy -c "config.yaml" > "sni.log" 2>&1 &
 ```
 
-> 另外，强烈建议顺便提高一下 [系统文件句柄数上限](https://github.com/XIU2/SNIProxy#-提高系统文件句柄数上限-避免报错-too-many-open-files)，避免遇到报错 **too many open files**  
+> 另外，强烈建议顺便提高一下 [系统文件句柄数上限](https://github.com/sheeye/SNIProxy#-提高系统文件句柄数上限-避免报错-too-many-open-files)，避免遇到报错 **too many open files**  
 
-> 另外，如果你希望 **开机启动、后台运行、方便管理** 等，那么可以将其 [注册为系统服务](https://github.com/XIU2/SNIProxy#-linux-配置为系统服务-systemd---以支持开机启动后台运行等)。
+> 另外，如果你希望 **开机启动、后台运行、方便管理** 等，那么可以将其 [注册为系统服务](https://github.com/sheeye/SNIProxy#-linux-配置为系统服务-systemd---以支持开机启动后台运行等)。
 
 </details>
 
@@ -141,15 +138,14 @@ nohup ./sniproxy -c "config.yaml" > "sni.log" 2>&1 &
 
 下载已编译好的可执行文件并解压：
 
-1. [Github Releases](https://github.com/XIU2/SNIProxy/releases)  
-2. [蓝奏云](https://pan.lanzouj.com/b077bn2ri)(密码:xiu2)
+[Github Releases](https://github.com/sheeye/SNIProxy/releases)  
 
 ```yaml
 # 进入 sniproxy 压缩包所在目录（记得修改下面示例路径）
 cd /xxx/xxx
 
-# 解压（不需要删除旧文件，会直接覆盖，自行根据需求替换 文件名）
-tar -zxf sniproxy_linux_amd64.tar.gz
+# 解压（不需要删除旧文件，会直接覆盖，自行根据需求替换文件名）
+tar -zxf SNIProxy_1.0.4_darwin_amd64.tar.gz
 
 # 赋予执行权限
 chmod a+x sniproxy
@@ -172,7 +168,7 @@ nano config.yaml
 home@xiu:~# ./sniproxy -h
 
 SNIProxy vX.X.X
-https://github.com/XIU2/SNIProxy
+https://github.com/sheeye/SNIProxy
 
 参数：
     -c config.yaml
@@ -210,7 +206,9 @@ https://github.com/XIU2/SNIProxy
 # "[::]:443"        代表监听本机所有 IPv6 地址的 443 端口
 # "[::1]:443"       代表监听本机本地 IPv6 地址的 443 端口（只有本机可访问）
 # 上面示例中的 IP 地址也可以换成例如你的外网 IP，这样的话就只能从该外网 IP 访问了
-listen_addr: ":443"
+listen_addrs:
+  - ":443"
+  - ":80"
 
 # 可选：启用 Socks5 前置代理
 # （启用前：访客 <=> SNIProxy <=> 目标网站
@@ -220,16 +218,28 @@ enable_socks5: true
 # 可选：配置 Socks5 代理地址
 socks_addr: 127.0.0.1:40000
 
-# 可选：允许所有域名（开启后会忽略下面的 rules 列表）
+# 可选：允许所有域名（未开启只转发rules里配置的域名）
 allow_all_hosts: true
 
-# 可选：仅允许指定域名（和上面的 allow_all_hosts 二选一）
-# 指定域名后，则代表允许 域名自身 及其 所有子域名 访问服务（以下方两个为例，√ 代表允许，× 代表阻止）
+# 可选：转发规则
+# host是请求域名，匹配host自身及其所有子域名，为*则匹配所有域名(*要加双引号)。
+# target是转发目标，端口省略则转发至请求端口，此项省略则转发至请求域名。
 rules:
-  - example.com #    example.com  √ 、a.example.com  √ 、a.a.example.com  √
-  - b.example2.com # example2.com × 、b.example2.com √ 、c.b.example2.com √
-```
+  - host: baidu.com
+    target: 111.111.111.111:443
+  - host: www.github.com
+    target: 123.123.123.123
+  - host: www.test.com
+  - host: "*"
 
+#可选：目标映射
+#对转发目标进行映射，解决同时支持http和https时端口不一样的映射问题，比如目标是nat服务器，可能就需要映射一下
+target_mapping:
+  - old: "123.123.123.123:80"
+    new: "123.123.123.123:8080"
+  - old: "123.123.123.123:443"
+    new: "123.123.123.123:8081"
+```
 ****
 
 一些示例：
@@ -237,7 +247,8 @@ rules:
 1. 允许所有域名访问
 
 ```yaml
-listen_addr: ":443"
+listen_addrs:
+  - ":443"
 allow_all_hosts: true
 ```
 
@@ -247,16 +258,18 @@ allow_all_hosts: true
 2. 仅允许指定域名
 
 ```yaml
-listen_addr: ":443"
+listen_addrs:
+  - ":443"
 rules:
-  - example.com
-  - b.example2.com
+  - host: example.com
+  - host: b.example2.com
 ```
 
 3. 允许所有域名访问 + 启用前置代理
 
 ```yaml
-listen_addr: ":443"
+listen_addrs:
+  - ":443"
 enable_socks5: true
 socks_addr: 127.0.0.1:40000
 allow_all_hosts: true
@@ -265,12 +278,13 @@ allow_all_hosts: true
 4. 仅允许指定域名 + 启用前置代理
 
 ```yaml
-listen_addr: ":443"
+listen_addrs:
+  - ":443"
 enable_socks5: true
 socks_addr: 127.0.0.1:40000
 rules:
-  - example.com
-  - b.example2.com
+  - host: example.com
+  - host: b.example2.com
 ```
 
 </details>
@@ -366,16 +380,6 @@ root hard nofile 65535" >> /etc/security/limits.conf
 
 
 ****
-
-## 问题反馈
-
-如果你遇到什么问题，可以先去 [**Issues**](https://github.com/XIU2/SNIProxy/issues)、[Discussions](https://github.com/XIU2/SNIProxy/discussions) 里看看是否有别人问过了（记得去看下  [**Closed**](https://github.com/XIU2/SNIProxy/issues?q=is%3Aissue+is%3Aclosed) 的）。  
-如果没找到类似问题，请新开个 [**Issues**](https://github.com/XIU2/SNIProxy/issues/new) 来告诉我！
-
-> **注意**！_与 `反馈问题、功能建议` 无关的，请前往项目内部 论坛 讨论（上面的 `💬 Discussions`_  
-
-****
-
 
 ## 手动编译
 

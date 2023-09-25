@@ -442,7 +442,7 @@ go build -o Releases/sniproxy_windows_386/sniproxy.exe -ldflags "-s -w -X main.v
 
 ## Credit
 
-The source code has been adapted from [FastGitORG/F-Proxy-Agent](https://github.com/FastGitORG/F-Proxy-Agent) and [TachibanaSuzume/SNIProxyGo](https://github.com/TachibanaSuzume/SNIProxyGo) .  
+The source code has been adapted from [XIU2/SNIProxy](https://github.com/XIU2/SNIProxy) .  
 
 Thank them for their help!
 

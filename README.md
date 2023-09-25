@@ -1,4 +1,4 @@
-# XIU2/SNIProxy
+# SNIProxy
 
 [![Go Version](https://img.shields.io/github/go-mod/go-version/sheeye/SNIProxy.svg?style=flat-square&label=Go&color=00ADD8&logo=go)](https://github.com/sheeye/SNIProxy/)
 [![Release Version](https://img.shields.io/github/v/release/sheeye/SNIProxy.svg?style=flat-square&label=Release&color=00ADD8&logo=github)](https://github.com/sheeye/SNIProxy/releases/latest)

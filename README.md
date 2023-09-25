@@ -1,10 +1,10 @@
 # XIU2/SNIProxy
 
-[![Go Version](https://img.shields.io/github/go-mod/go-version/XIU2/SNIProxy.svg?style=flat-square&label=Go&color=00ADD8&logo=go)](https://github.com/XIU2/SNIProxy/)
-[![Release Version](https://img.shields.io/github/v/release/XIU2/SNIProxy.svg?style=flat-square&label=Release&color=00ADD8&logo=github)](https://github.com/XIU2/SNIProxy/releases/latest)
-[![GitHub license](https://img.shields.io/github/license/XIU2/SNIProxy.svg?style=flat-square&label=License&color=00ADD8&logo=github)](https://github.com/XIU2/SNIProxy/)
-[![GitHub Star](https://img.shields.io/github/stars/XIU2/SNIProxy.svg?style=flat-square&label=Star&color=00ADD8&logo=github)](https://github.com/XIU2/SNIProxy/)
-[![GitHub Fork](https://img.shields.io/github/forks/XIU2/SNIProxy.svg?style=flat-square&label=Fork&color=00ADD8&logo=github)](https://github.com/XIU2/SNIProxy/)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/sheeye/SNIProxy.svg?style=flat-square&label=Go&color=00ADD8&logo=go)](https://github.com/sheeye/SNIProxy/)
+[![Release Version](https://img.shields.io/github/v/release/sheeye/SNIProxy.svg?style=flat-square&label=Release&color=00ADD8&logo=github)](https://github.com/sheeye/SNIProxy/releases/latest)
+[![GitHub license](https://img.shields.io/github/license/sheeye/SNIProxy.svg?style=flat-square&label=License&color=00ADD8&logo=github)](https://github.com/sheeye/SNIProxy/)
+[![GitHub Star](https://img.shields.io/github/stars/sheeye/SNIProxy.svg?style=flat-square&label=Star&color=00ADD8&logo=github)](https://github.com/sheeye/SNIProxy/)
+[![GitHub Fork](https://img.shields.io/github/forks/sheeye/SNIProxy.svg?style=flat-square&label=Fork&color=00ADD8&logo=github)](https://github.com/sheeye/SNIProxy/)
 
 🧷 自用的一个功能很简单的 SNI Proxy 顺便分享出来给有同样需求的人，用得上的话可以**点个⭐支持下~**
 
@@ -373,12 +373,6 @@ root hard nofile 65535" >> /etc/security/limits.conf
 如果没找到类似问题，请新开个 [**Issues**](https://github.com/XIU2/SNIProxy/issues/new) 来告诉我！
 
 > **注意**！_与 `反馈问题、功能建议` 无关的，请前往项目内部 论坛 讨论（上面的 `💬 Discussions`_  
-
-****
-
-## 赞赏支持
-
-![微信赞赏](https://cdn.staticaly.com/gh/XIU2/XIU2/master/img/zs-01.png)![支付宝赞赏](https://cdn.staticaly.com/gh/XIU2/XIU2/master/img/zs-02.png)
 
 ****
 

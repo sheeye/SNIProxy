@@ -194,8 +194,8 @@ func serve(c net.Conn, raddr string, port int) {
 		return
 	}
 
-	target := "";
-	ok := false;
+	target = "";
+	ok = false;
 	host := strings.ToLower(ServerName)
 	target, ok = rulemap[host]
 	if !ok {

@@ -167,6 +167,20 @@ func serve(c net.Conn, raddr string, port int) {
 		return
 	}
 
+	target := "";
+	ok := false;
+	if len(rulemap) == 1 {
+		target, ok = rulemap["*"]
+		if ok && len(target) > 0 {
+			if(!strings.Contains(target, ":")) {
+				target = fmt.Sprintf("%s:%d", target, port)
+			}
+			serviceLogger(fmt.Sprintf("转发目标: %s", target), 32, false)
+			forward(c, buf[:n], target, raddr)
+			return
+		}
+	}
+	
 	RequestType := getRequestType(buf[:n])
 	ServerName := ""
 	if RequestType == "HTTP" {
